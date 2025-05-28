@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFF診断ツール</title>
+    <link rel="stylesheet" href="styles.css">
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        .diagnostic-card {
+            background: #f8f9fa;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .status-ok { border-left: 4px solid #28a745; }
+        .status-error { border-left: 4px solid #dc3545; }
+        .status-warning { border-left: 4px solid #ffc107; }
+        .debug-info {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔧 LIFF診断ツール</h1>
+        </header>
+
+        <main class="main-content">
+            <div class="card">
+                <h2>LIFF設定診断</h2>
+                <button id="runDiagnostic" class="btn btn-primary">診断を実行</button>
+            </div>
+
+            <div id="diagnosticResults" class="card" style="display: none;">
+                <h2>診断結果</h2>
+                <div id="results"></div>
+            </div>
+
+            <div class="card">
+                <h2>推奨設定</h2>
+                <div class="diagnostic-card">
+                    <h3>LINE Developers Console設定</h3>
+                    <ul>
+                        <li><strong>Endpoint URL:</strong> HTTPS必須（例: https://your-domain.com/）</li>
+                        <li><strong>Scope:</strong> profile, openid, chat_message.write</li>
+                        <li><strong>Size:</strong> Full</li>
+                        <li><strong>Bot Link Feature:</strong> Aggressive（推奨）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>トラブルシューティング</h2>
+                <div class="diagnostic-card">
+                    <h3>400 Bad Request の一般的な原因</h3>
+                    <ul>
+                        <li>LIFF IDが無効または存在しない</li>
+                        <li>Endpoint URLがHTTPSでない</li>
+                        <li>Endpoint URLが設定と異なる</li>
+                        <li>チャンネルが無効化されている</li>
+                        <li>LIFFアプリが削除されている</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="env.js"></script>
+    <script>
+        const LIFF_ID = window.ENV?.LIFF_ID || 'YOUR_LIFF_ID';
+        
+        document.getElementById('runDiagnostic').addEventListener('click', async () => {
+            const resultsDiv = document.getElementById('results');
+            const diagnosticResults = document.getElementById('diagnosticResults');
+            
+            diagnosticResults.style.display = 'block';
+            resultsDiv.innerHTML = '<p>診断中...</p>';
+            
+            let results = [];
+            
+            // 基本情報チェック
+            results.push({
+                title: 'LIFF ID',
+                status: LIFF_ID !== 'YOUR_LIFF_ID' ? 'ok' : 'error',
+                message: LIFF_ID !== 'YOUR_LIFF_ID' ? `設定済み: ${LIFF_ID}` : '未設定（YOUR_LIFF_IDのまま）'
+            });
+            
+            // URL チェック
+            const isHttps = window.location.protocol === 'https:';
+            results.push({
+                title: 'HTTPS通信',
+                status: isHttps ? 'ok' : 'warning',
+                message: isHttps ? 'HTTPS環境です' : 'HTTP環境（LIFFの一部機能が制限されます）'
+            });
+            
+            // User Agent チェック
+            const userAgent = navigator.userAgent;
+            const isLineApp = userAgent.includes('Line/');
+            results.push({
+                title: 'LINE アプリ',
+                status: isLineApp ? 'ok' : 'warning',
+                message: isLineApp ? 'LINEアプリ内で実行されています' : '通常のブラウザで実行されています'
+            });
+            
+            // LIFF SDK チェック
+            results.push({
+                title: 'LIFF SDK',
+                status: typeof liff !== 'undefined' ? 'ok' : 'error',
+                message: typeof liff !== 'undefined' ? 'LIFF SDKが読み込まれています' : 'LIFF SDKが読み込まれていません'
+            });
+            
+            // LIFF初期化テスト
+            if (typeof liff !== 'undefined') {
+                try {
+                    await liff.init({ liffId: LIFF_ID });
+                    results.push({
+                        title: 'LIFF初期化',
+                        status: 'ok',
+                        message: '初期化成功'
+                    });
+                    
+                    // 詳細情報取得
+                    const liffInfo = {
+                        os: liff.getOS(),
+                        language: liff.getLanguage(),
+                        version: liff.getVersion(),
+                        lineVersion: liff.getLineVersion(),
+                        isInClient: liff.isInClient(),
+                        isLoggedIn: liff.isLoggedIn(),
+                        accessToken: liff.getAccessToken() ? '取得済み' : '未取得'
+                    };
+                    
+                    results.push({
+                        title: 'LIFF環境情報',
+                        status: 'ok',
+                        message: '',
+                        debug: JSON.stringify(liffInfo, null, 2)
+                    });
+                    
+                } catch (error) {
+                    results.push({
+                        title: 'LIFF初期化',
+                        status: 'error',
+                        message: `エラー: ${error.message}`,
+                        debug: `エラーコード: ${error.code || 'N/A'}\nスタック: ${error.stack || 'N/A'}`
+                    });
+                }
+            }
+            
+            // 結果表示
+            let html = '';
+            results.forEach(result => {
+                html += `
+                    <div class="diagnostic-card status-${result.status}">
+                        <h3>${result.title}</h3>
+                        <p>${result.message}</p>
+                        ${result.debug ? `<div class="debug-info">${result.debug}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            // 環境情報を追加
+            html += `
+                <div class="diagnostic-card">
+                    <h3>環境情報</h3>
+                    <div class="debug-info">URL: ${window.location.href}
+User Agent: ${navigator.userAgent}
+プロトコル: ${window.location.protocol}
+ホスト: ${window.location.host}
+パス: ${window.location.pathname}</div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        });
+    </script>
+</body>
+</html>

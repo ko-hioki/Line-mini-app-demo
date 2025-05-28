@@ -68,6 +68,12 @@ const initializeLiff = async () => {
     try {
         showLoading();
         
+        // 環境情報をログ出力
+        console.log('🔍 LIFF初期化開始');
+        console.log('LIFF_ID:', LIFF_ID);
+        console.log('User Agent:', navigator.userAgent);
+        console.log('URL:', window.location.href);
+        
         // LIFFが利用可能かチェック（モック環境での対応）
         if (typeof liff === 'undefined') {
             // LIFFが利用できない場合のモック対応
@@ -79,8 +85,17 @@ const initializeLiff = async () => {
             return;
         }
         
+        console.log('🚀 LIFF SDKが利用可能です。初期化中...');
+        
         await liff.init({ liffId: LIFF_ID });
         liffInitialized = true;
+        
+        console.log('✅ LIFF初期化成功');
+        console.log('LIFF OS:', liff.getOS());
+        console.log('LIFF Language:', liff.getLanguage());
+        console.log('LIFF Version:', liff.getVersion());
+        console.log('Is in client:', liff.isInClient());
+        console.log('Is logged in:', liff.isLoggedIn());
         
         if (liff.isLoggedIn()) {
             userProfile = await liff.getProfile();
@@ -93,7 +108,18 @@ const initializeLiff = async () => {
         }
         
     } catch (error) {
-        console.error('LIFF initialization failed:', error);
+        console.error('❌ LIFF initialization failed:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            code: error.code || 'N/A',
+            stack: error.stack
+        });
+        
+        // エラーの詳細を画面に表示
+        const errorMessage = `LIFF初期化エラー: ${error.message} (コード: ${error.code || 'N/A'})`;
+        showMessage(errorMessage, 'error');
+        
         // エラー時はモックモードで動作
         liffInitialized = true;
         updateLoginStatus(false);
