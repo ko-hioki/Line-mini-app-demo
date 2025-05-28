@@ -219,10 +219,59 @@ textarea:focus {
     font-size: 0.9rem;
     max-height: 200px;
     overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.result-area h4 {
+    margin-bottom: 0.5rem;
+    color: #06C755;
+    font-size: 1rem;
+}
+
+.result-area p {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.result-area p strong {
+    display: inline-block;
+    min-width: 60px;
+    color: #333;
+}
+
+.result-area .debug-info {
+    background: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    overflow-x: auto;
 }
 
 .result-area:empty {
     display: none;
+}
+
+.result-area .qr-value {
+    background: #ffffff;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    border: 1px solid #e1e8ed;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.result-area .qr-value a {
+    color: #06C755 !important;
+    text-decoration: underline;
+    word-break: break-all;
 }
 
 /* フッター */
@@ -335,6 +384,94 @@ textarea:focus {
         left: 10px;
         right: 10px;
         max-width: none;
+    }
+    
+    /* QRコード結果表示のモバイル対応 */
+    .result-area {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+        max-height: 150px;
+        margin-top: 0.75rem;
+    }
+    
+    .result-area h4 {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .result-area p {
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
+    }
+    
+    .result-area p strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        min-width: auto;
+    }
+    
+    .result-area .debug-info {
+        padding: 0.4rem;
+        font-size: 0.7rem;
+        margin-top: 0.4rem;
+    }
+}
+
+/* LINEブラウザ専用対応 */
+@media (max-width: 375px) {
+    .main-content {
+        padding: 0.75rem;
+    }
+    
+    .feature-card {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .result-area {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        max-height: 120px;
+        border-radius: 6px;
+    }
+    
+    .result-area h4 {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .result-area p {
+        margin-bottom: 0.3rem;
+        line-height: 1.2;
+    }
+    
+    .result-area p strong {
+        font-size: 0.75rem;
+    }
+}
+
+/* 極小画面（iPhone SE等）対応 */
+@media (max-width: 320px) {
+    .header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .main-content {
+        padding: 0.5rem;
+    }
+    
+    .feature-card {
+        padding: 0.5rem;
+    }
+    
+    .result-area {
+        padding: 0.4rem;
+        font-size: 0.7rem;
+        max-height: 100px;
+    }
+    
+    .result-area h4 {
+        font-size: 0.8rem;
     }
 }
 

@@ -189,9 +189,13 @@ const scanQrCode = async () => {
             const result = await liff.scanCodeV2();
             
             console.log('✅ QR scan result:', result);
+            
+            // 長いURLや文字列の表示を最適化
+            const displayValue = formatQrValue(result.value);
             elements.qrResult.innerHTML = `
                 <h4>QRコード読み取り結果:</h4>
-                <p><strong>値:</strong> ${result.value}</p>
+                <p><strong>値:</strong></p>
+                <div class="qr-value">${displayValue}</div>
             `;
             showMessage('QRコードを読み取りました', 'success');
             
@@ -201,9 +205,11 @@ const scanQrCode = async () => {
             showLoading();
             const result = await liff.scanCode();
             
+            const displayValue = formatQrValue(result.value);
             elements.qrResult.innerHTML = `
                 <h4>QRコード読み取り結果:</h4>
-                <p><strong>値:</strong> ${result.value}</p>
+                <p><strong>値:</strong></p>
+                <div class="qr-value">${displayValue}</div>
             `;
             showMessage('QRコードを読み取りました', 'success');
             
@@ -211,9 +217,11 @@ const scanQrCode = async () => {
             // LIFF環境外またはQRスキャン機能が利用できない場合
             console.log('⚠️ QR scan not available - showing mock data');
             const mockQrData = `https://example.com/demo?id=${Date.now()}`;
+            const displayValue = formatQrValue(mockQrData);
             elements.qrResult.innerHTML = `
                 <h4>QRコード読み取り結果 (モック):</h4>
-                <p><strong>値:</strong> ${mockQrData}</p>
+                <p><strong>値:</strong></p>
+                <div class="qr-value">${displayValue}</div>
                 <p><em>※ LINE内ブラウザで実行すると実際のQRスキャナーが起動します</em></p>
             `;
             showMessage('⚠️ QRスキャン機能を使用するにはLINE内ブラウザで開いてください', 'warning');
@@ -447,6 +455,36 @@ const closeWindow = () => {
         console.error('Close window failed:', error);
         showMessage('ウィンドウを閉じることができませんでした', 'error');
     }
+};
+
+// QRコード値の表示を最適化する関数
+const formatQrValue = (value) => {
+    if (!value) return 'N/A';
+    
+    // HTMLエスケープ
+    const escapedValue = value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;');
+    
+    // URLの場合、リンクとして表示
+    if (escapedValue.startsWith('http://') || escapedValue.startsWith('https://')) {
+        // 長いURLを短縮表示
+        const displayUrl = escapedValue.length > 50 
+            ? escapedValue.substring(0, 47) + '...' 
+            : escapedValue;
+        
+        return `<a href="${escapedValue}" target="_blank" rel="noopener noreferrer" style="word-break: break-all; color: #06C755; text-decoration: underline;">${displayUrl}</a>`;
+    }
+    
+    // 長いテキストの場合、改行を追加
+    if (escapedValue.length > 30) {
+        return `<span style="word-break: break-all; display: block; line-height: 1.4;">${escapedValue}</span>`;
+    }
+    
+    return `<span style="word-break: break-all;">${escapedValue}</span>`;
 };
 
 // イベントリスナーの設定
