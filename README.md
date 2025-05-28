@@ -103,6 +103,26 @@ npx live-server --https=true --port=8443
 2. Settings > Pages でGitHub Pagesを有効化
 3. HTTPSで自動配信される
 
+**Repository Secretsを使用したセキュアなデプロイ**
+
+GitHub Pagesで安全にLIFF_IDを管理するために、Repository Secretsを使用：
+
+1. **Repository Secretsの設定**:
+   - GitHubリポジトリの `Settings` > `Security` > `Secrets and variables` > `Actions`
+   - `New repository secret` をクリック
+   - Name: `LIFF_ID`
+   - Secret: 実際のLIFF ID値（例: `2007491656-bKpm0ygE`）
+
+2. **自動デプロイ**:
+   - `main`ブランチにpushすると、GitHub Actionsが自動実行
+   - Repository SecretsからLIFF_IDを取得して`env.js`を生成
+   - GitHub Pagesに自動デプロイ
+
+3. **セキュリティ**:
+   - LIFF_IDはRepository Secretsで安全に管理
+   - `env.js`ファイルはデプロイ時に自動生成（リポジトリには含まれない）
+   - 機密情報の漏洩リスクを最小化
+
 #### Netlify
 
 1. [Netlify](https://netlify.com)にサインアップ
@@ -178,6 +198,17 @@ LIFF initialization failed
 ```
 **解決方法**: LIFF_IDが正しく設定されているか確認
 
+#### 400 Bad Request エラー
+```
+400 Bad Request at login
+```
+**解決方法**: 
+1. LIFF_IDが正しいか確認
+2. LINE Developers ConsoleでEndpoint URLが正しく設定されているか確認
+3. LIFFアプリの設定で正しいスコープ（profile, openid等）が設定されているか確認
+4. HTTPSで配信されているか確認
+5. 診断ツール（`diagnostic.html`）を使用して詳細をチェック
+
 #### QRスキャンが動作しない
 ```
 QR scan not available
@@ -194,7 +225,23 @@ Geolocation not available
 
 1. **開発者ツール**: ブラウザのコンソールでエラーログを確認
 2. **LIFF Inspector**: LINE Developers Consoleの「LIFF Inspector」を使用
-3. **ログ出力**: `console.log`でデバッグ情報を出力
+3. **診断ツール**: `diagnostic.html`でLIFF環境を詳細チェック
+4. **ログ出力**: `console.log`でデバッグ情報を出力
+
+### 診断ツール（diagnostic.html）
+
+LIFF関連の問題を診断するための専用ツール：
+
+- **LIFF_ID設定状況**の確認
+- **HTTPS環境**の確認
+- **LINE環境**の検出
+- **LIFF SDK**の可用性チェック
+- **詳細なエラー情報**の表示
+
+使用方法:
+```
+https://your-domain.com/diagnostic.html
+```
 
 ## 📋 ライセンス
 
