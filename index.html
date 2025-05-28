@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE ミニアプリ デモ</title>
+    <link rel="stylesheet" href="styles.css">
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1>LINE ミニアプリ デモ</h1>
+            <div id="loginStatus" class="login-status">
+                <span id="userInfo"></span>
+                <button id="loginBtn" class="btn btn-primary" style="display: none;">LINEログイン</button>
+                <button id="logoutBtn" class="btn btn-secondary" style="display: none;">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メイン機能エリア -->
+        <main class="main-content">
+            <!-- ユーザー情報カード -->
+            <div id="userCard" class="card" style="display: none;">
+                <h2>ユーザー情報</h2>
+                <div id="profileInfo" class="profile-info">
+                    <img id="profilePicture" src="" alt="プロフィール画像" class="profile-image">
+                    <div class="profile-details">
+                        <p><strong>名前:</strong> <span id="displayName"></span></p>
+                        <p><strong>ユーザーID:</strong> <span id="userId"></span></p>
+                        <p><strong>ステータス:</strong> <span id="statusMessage"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 機能ボタンエリア -->
+            <div class="features-grid">
+                <!-- QRコード読み取り -->
+                <div class="feature-card">
+                    <h3>📱 QRコード読み取り</h3>
+                    <p>LIFFのQRコードスキャナーを使用</p>
+                    <button id="scanQrBtn" class="btn btn-feature">QRスキャン開始</button>
+                    <div id="qrResult" class="result-area"></div>
+                </div>
+
+                <!-- メッセージ送信 -->
+                <div class="feature-card">
+                    <h3>💬 メッセージ送信</h3>
+                    <p>LINEトークにメッセージを送信</p>
+                    <textarea id="messageText" placeholder="送信するメッセージを入力してください" rows="3"></textarea>
+                    <button id="sendMessageBtn" class="btn btn-feature">メッセージ送信</button>
+                </div>
+
+                <!-- 共有機能 -->
+                <div class="feature-card">
+                    <h3>📤 コンテンツ共有</h3>
+                    <p>LINEでコンテンツを共有</p>
+                    <input type="text" id="shareText" placeholder="共有するテキスト" class="input-field">
+                    <button id="shareBtn" class="btn btn-feature">LINE共有</button>
+                </div>
+
+                <!-- デバイス情報 -->
+                <div class="feature-card">
+                    <h3>📲 デバイス情報</h3>
+                    <p>LIFF環境とデバイス情報</p>
+                    <button id="getDeviceInfoBtn" class="btn btn-feature">情報取得</button>
+                    <div id="deviceInfo" class="result-area"></div>
+                </div>
+
+                <!-- 位置情報 -->
+                <div class="feature-card">
+                    <h3>📍 位置情報</h3>
+                    <p>現在の位置情報を取得</p>
+                    <button id="getLocationBtn" class="btn btn-feature">位置情報取得</button>
+                    <div id="locationInfo" class="result-area"></div>
+                </div>
+
+                <!-- 外部ブラウザで開く -->
+                <div class="feature-card">
+                    <h3>🌐 外部ブラウザ</h3>
+                    <p>外部ブラウザでURLを開く</p>
+                    <input type="url" id="externalUrl" placeholder="https://example.com" class="input-field">
+                    <button id="openExternalBtn" class="btn btn-feature">外部ブラウザで開く</button>
+                </div>
+
+                <!-- クリップボード -->
+                <div class="feature-card">
+                    <h3>📋 クリップボード</h3>
+                    <p>クリップボードにテキストをコピー</p>
+                    <input type="text" id="clipboardText" placeholder="コピーするテキスト" class="input-field">
+                    <button id="copyToClipboardBtn" class="btn btn-feature">クリップボードにコピー</button>
+                </div>
+
+                <!-- ウィンドウ閉じる -->
+                <div class="feature-card">
+                    <h3>❌ ウィンドウを閉じる</h3>
+                    <p>LIFFウィンドウを閉じる</p>
+                    <button id="closeWindowBtn" class="btn btn-danger">ウィンドウを閉じる</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <p>&copy; 2025 LINE ミニアプリ デモ</p>
+        </footer>
+    </div>
+
+    <!-- ローディング表示 -->
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>処理中...</p>
+    </div>
+
+    <!-- メッセージ表示エリア -->
+    <div id="messageArea" class="message-area"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

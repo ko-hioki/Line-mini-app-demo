@@ -1,0 +1,35 @@
+{
+  "name": "line-mini-app-demo",
+  "version": "1.0.0",
+  "description": "LINE Mini App (LIFF) Demo Application showcasing various LIFF features",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Static site - no build required'",
+    "serve": "python3 -m http.server 8000",
+    "https": "npx http-server -p 8443 --ssl",
+    "info": "./start-server.sh"
+  },
+  "keywords": [
+    "line",
+    "liff",
+    "mini-app",
+    "javascript",
+    "frontend",
+    "mobile"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/line-mini-app-demo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/line-mini-app-demo/issues"
+  },
+  "homepage": "https://github.com/yourusername/line-mini-app-demo#readme"
+}

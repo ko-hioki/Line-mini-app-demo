@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE ミニアプリ設定ガイド</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #06C755; }
+        h2 { color: #333; border-bottom: 2px solid #06C755; padding-bottom: 5px; }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #06C755;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        a { color: #06C755; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 LINE ミニアプリ設定ガイド</h1>
+        
+        <h2>1. LINE Developers Console 設定</h2>
+        
+        <div class="step">
+            <h3>ステップ 1: チャンネル作成</h3>
+            <ol>
+                <li><a href="https://developers.line.biz/console/" target="_blank">LINE Developers Console</a> にアクセス</li>
+                <li>「プロバイダー」を作成または選択</li>
+                <li>「Messaging API」または「LINE Login」チャンネルを作成</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>ステップ 2: LIFF アプリ追加</h3>
+            <ol>
+                <li>作成したチャンネルの「LIFF」タブを選択</li>
+                <li>「追加」ボタンをクリック</li>
+                <li>以下の設定を入力：
+                    <ul>
+                        <li><strong>LIFF app name:</strong> LINE ミニアプリ デモ</li>
+                        <li><strong>Size:</strong> Full（推奨）</li>
+                        <li><strong>Endpoint URL:</strong> https://your-domain.com/</li>
+                        <li><strong>Scope:</strong> profile, openid, chat_message.write</li>
+                        <li><strong>Bot Link Feature:</strong> Aggressive（必要に応じて）</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>ステップ 3: LIFF ID取得</h3>
+            <p>作成されたLIFFアプリから「LIFF ID」をコピーしてください。</p>
+            <div class="code">LIFF ID例: 1234567890-AbCdEfGh</div>
+        </div>
+        
+        <h2>2. アプリケーション設定</h2>
+        
+        <div class="step">
+            <h3>script.js の更新</h3>
+            <p>以下の行を実際のLIFF IDに更新してください：</p>
+            <div class="code">const LIFF_ID = 'YOUR_LIFF_ID'; // ここを実際のLIFF IDに変更</div>
+        </div>
+        
+        <h2>3. HTTPS配信設定</h2>
+        
+        <div class="warning">
+            <strong>⚠️ 重要:</strong> LIFFアプリはHTTPS環境でのみ動作します。
+        </div>
+        
+        <div class="step">
+            <h3>オプション A: GitHub Pages（推奨）</h3>
+            <ol>
+                <li>GitHubにリポジトリを作成</li>
+                <li>プロジェクトファイルをプッシュ</li>
+                <li>Settings > Pages でGitHub Pagesを有効化</li>
+                <li>生成されたHTTPS URLをLIFFのEndpoint URLに設定</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>オプション B: Netlify</h3>
+            <ol>
+                <li><a href="https://netlify.com" target="_blank">Netlify</a>にサインアップ</li>
+                <li>プロジェクトフォルダをドラッグ&ドロップ</li>
+                <li>自動生成されたHTTPS URLを使用</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>オプション C: ローカル開発</h3>
+            <p>ターミナルで以下のコマンドを実行：</p>
+            <div class="code">
+# Node.js live-serverを使用<br>
+npx live-server --https=true --port=8443<br><br>
+# またはPythonを使用<br>
+python3 -m http.server 8000
+            </div>
+        </div>
+        
+        <h2>4. 動作確認</h2>
+        
+        <div class="step">
+            <h3>テスト方法</h3>
+            <ol>
+                <li>LINEアプリで友達またはグループチャットを開く</li>
+                <li>LIFF URLを送信: <code>https://liff.line.me/{LIFF_ID}</code></li>
+                <li>URLをタップしてアプリを起動</li>
+                <li>各機能をテストしてください</li>
+            </ol>
+        </div>
+        
+        <h2>5. よくある問題と解決方法</h2>
+        
+        <div class="step">
+            <h3>LIFF初期化エラー</h3>
+            <ul>
+                <li>LIFF IDが正しく設定されているか確認</li>
+                <li>Endpoint URLがHTTPSであることを確認</li>
+                <li>スコープ設定が適切であることを確認</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h3>QRスキャンが動作しない</h3>
+            <ul>
+                <li>HTTPS環境で実行されているか確認</li>
+                <li>カメラ権限が許可されているか確認</li>
+                <li>LINEアプリ内で実行されているか確認</li>
+            </ul>
+        </div>
+        
+        <h2>6. 参考リンク</h2>
+        
+        <ul>
+            <li><a href="https://developers.line.biz/ja/docs/liff/" target="_blank">LIFF公式ドキュメント</a></li>
+            <li><a href="https://developers.line.biz/ja/reference/liff/" target="_blank">LIFF API リファレンス</a></li>
+            <li><a href="https://developers.line.biz/console/" target="_blank">LINE Developers Console</a></li>
+        </ul>
+        
+        <div class="warning">
+            <strong>📝 注意:</strong> このデモアプリは学習・開発目的で作成されています。本番環境では適切なセキュリティ対策とエラーハンドリングを実装してください。
+        </div>
+    </div>
+</body>
+</html>
