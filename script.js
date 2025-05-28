@@ -180,27 +180,71 @@ const logout = async () => {
 // QRコードスキャン
 const scanQrCode = async () => {
     try {
-        if (typeof liff !== 'undefined' && liffInitialized && liff.scanCode) {
+        // LIFF環境でscanCodeV2が利用可能かチェック
+        if (typeof liff !== 'undefined' && liffInitialized && liff.scanCodeV2) {
+            console.log('🔍 Starting LINE QR scanner...');
             showLoading();
-            const result = await liff.scanCode();
+            
+            // scanCodeV2を使用してLINEの実際のQRコードリーダーを起動
+            const result = await liff.scanCodeV2();
+            
+            console.log('✅ QR scan result:', result);
             elements.qrResult.innerHTML = `
                 <h4>QRコード読み取り結果:</h4>
                 <p><strong>値:</strong> ${result.value}</p>
             `;
             showMessage('QRコードを読み取りました', 'success');
+            
+        } else if (typeof liff !== 'undefined' && liffInitialized && liff.scanCode) {
+            // フォールバック: 古いscanCodeメソッド
+            console.log('🔍 Using fallback scanCode...');
+            showLoading();
+            const result = await liff.scanCode();
+            
+            elements.qrResult.innerHTML = `
+                <h4>QRコード読み取り結果:</h4>
+                <p><strong>値:</strong> ${result.value}</p>
+            `;
+            showMessage('QRコードを読み取りました', 'success');
+            
         } else {
-            // モック対応
+            // LIFF環境外またはQRスキャン機能が利用できない場合
+            console.log('⚠️ QR scan not available - showing mock data');
             const mockQrData = `https://example.com/demo?id=${Date.now()}`;
             elements.qrResult.innerHTML = `
                 <h4>QRコード読み取り結果 (モック):</h4>
                 <p><strong>値:</strong> ${mockQrData}</p>
-                <p><em>※ これはデモ用のモックデータです</em></p>
+                <p><em>※ LINE内ブラウザで実行すると実際のQRスキャナーが起動します</em></p>
             `;
-            showMessage('モックQRコードを読み取りました', 'success');
+            showMessage('⚠️ QRスキャン機能を使用するにはLINE内ブラウザで開いてください', 'warning');
         }
     } catch (error) {
-        console.error('QR scan failed:', error);
-        showMessage('QRコード読み取りに失敗しました', 'error');
+        console.error('❌ QR scan failed:', error);
+        
+        // エラーの詳細を表示
+        let errorMessage = 'QRコード読み取りに失敗しました';
+        if (error.code) {
+            switch (error.code) {
+                case 'PERMISSION_DENIED':
+                    errorMessage = 'カメラの使用許可が必要です';
+                    break;
+                case 'CAMERA_NOT_AVAILABLE':
+                    errorMessage = 'カメラが利用できません';
+                    break;
+                case 'USER_CANCELLED':
+                    errorMessage = 'QRスキャンがキャンセルされました';
+                    break;
+                default:
+                    errorMessage = `エラー: ${error.code}`;
+            }
+        }
+        
+        elements.qrResult.innerHTML = `
+            <h4>エラー:</h4>
+            <p>${errorMessage}</p>
+            <p><small>詳細: ${error.message || 'Unknown error'}</small></p>
+        `;
+        showMessage(errorMessage, 'error');
     } finally {
         hideLoading();
     }

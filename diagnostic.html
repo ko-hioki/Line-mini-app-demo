@@ -147,6 +147,27 @@
                         debug: JSON.stringify(liffInfo, null, 2)
                     });
                     
+                    // QRスキャン機能チェック
+                    const qrScanV2Available = typeof liff.scanCodeV2 === 'function';
+                    const qrScanV1Available = typeof liff.scanCode === 'function';
+                    let qrStatus = 'error';
+                    let qrMessage = 'QRスキャン機能が利用できません';
+                    
+                    if (qrScanV2Available) {
+                        qrStatus = 'ok';
+                        qrMessage = 'QRスキャン機能（scanCodeV2）が利用可能です';
+                    } else if (qrScanV1Available) {
+                        qrStatus = 'warning';
+                        qrMessage = 'QRスキャン機能（scanCode）が利用可能です（古いバージョン）';
+                    }
+                    
+                    results.push({
+                        title: 'QRスキャン機能',
+                        status: qrStatus,
+                        message: qrMessage,
+                        debug: `scanCodeV2: ${qrScanV2Available ? '利用可能' : '利用不可'}\nscanCode: ${qrScanV1Available ? '利用可能' : '利用不可'}`
+                    });
+                    
                 } catch (error) {
                     results.push({
                         title: 'LIFF初期化',
