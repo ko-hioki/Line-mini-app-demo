@@ -42,6 +42,16 @@
 4. LIFF アプリを追加
 5. LIFF ID を取得
 
+**重要: LIFF設定項目**
+- **Endpoint URL**: デプロイしたアプリのHTTPS URL
+- **Scope**: 以下を必ず選択
+  - `profile` (ユーザープロフィール取得)
+  - `openid` (OpenID Connect)
+  - `chat_message.write` (メッセージ送信) ← **これが重要**
+- **Bot Link Feature**: オプション（必要に応じて有効化）
+
+> **注意**: `chat_message.write` スコープが設定されていないと、メッセージ送信機能が動作しません。
+
 ### 2. 環境変数の設定
 
 `.env.local` ファイルを作成してLIFF IDを設定：
@@ -197,6 +207,16 @@ LIFF SDKが利用できない環境（通常のブラウザなど）では、自
 LIFF initialization failed
 ```
 **解決方法**: LIFF_IDが正しく設定されているか確認
+
+#### メッセージ送信エラー
+```
+Send message failed / メッセージ送信に失敗しました
+```
+**解決方法**: 
+1. LINEにログインしているか確認
+2. LINE Developers ConsoleでLIFFアプリの「Scope」に`chat_message.write`が設定されているか確認
+3. LINE内ブラウザで実行しているか確認（通常ブラウザでは送信できません）
+4. ブラウザの開発者ツールのコンソールで詳細なエラー情報を確認
 
 #### 400 Bad Request エラー
 ```

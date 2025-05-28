@@ -267,20 +267,132 @@ const sendMessage = async () => {
     }
     
     try {
+        console.log('💬 Attempting to send message...');
+        console.log('LIFF initialized:', liffInitialized);
+        console.log('LIFF available:', typeof liff !== 'undefined');
+        console.log('sendMessages available:', typeof liff !== 'undefined' && typeof liff.sendMessages === 'function');
+        
         if (typeof liff !== 'undefined' && liffInitialized && liff.sendMessages) {
-            await liff.sendMessages([{
+            // LIFFの状態を確認
+            console.log('LIFF isLoggedIn:', liff.isLoggedIn());
+            console.log('LIFF isInClient:', liff.isInClient());
+            
+            showLoading();
+            
+            const messageObject = {
                 type: 'text',
                 text: message
-            }]);
+            };
+            
+            console.log('Sending message object:', messageObject);
+            
+            await liff.sendMessages([messageObject]);
+            
+            console.log('✅ Message sent successfully');
             showMessage('メッセージを送信しました', 'success');
+            
         } else {
-            // モック対応
-            showMessage(`モック送信: "${message}"`, 'success');
+            // LIFF環境でない場合の詳細ログ
+            let reason = 'Unknown reason';
+            if (typeof liff === 'undefined') {
+                reason = 'LIFF SDK not loaded';
+            } else if (!liffInitialized) {
+                reason = 'LIFF not initialized';
+            } else if (!liff.sendMessages) {
+                reason = 'sendMessages method not available';
+            }
+            
+            console.log('⚠️ Message sending not available:', reason);
+            showMessage(`モック送信: "${message}" (理由: ${reason})`, 'success');
         }
+        
         elements.messageText.value = '';
+        
     } catch (error) {
-        console.error('Send message failed:', error);
-        showMessage('メッセージ送信に失敗しました', 'error');
+        console.error('❌ Send message failed:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+        
+        // エラーの詳細分析
+        let errorMessage = 'メッセージ送信に失敗しました';
+        
+        if (error.code) {
+            switch (error.code) {
+                case 'INVALID_ARGUMENT':
+                    errorMessage = 'メッセージの形式が無効です';
+                    break;
+                case 'FORBIDDEN':
+                    errorMessage = 'メッセージ送信の権限がありません';
+                    break;
+                case 'INTERNAL_ERROR':
+                    errorMessage = 'LINE内部エラーが発生しました';
+                    break;
+                case 'NOT_LOGGED_IN':
+                    errorMessage = 'LINEにログインしてください';
+                    break;
+                default:
+                    errorMessage = `エラー (${error.code}): ${error.message}`;
+            }
+        }
+        
+        showMessage(errorMessage, 'error');
+    } finally {
+        hideLoading();
+    }
+};
+
+// メッセージ送信の診断情報を表示する関数
+const diagnoseSendMessage = () => {
+    console.log('📋 メッセージ送信診断情報:');
+    
+    if (typeof liff === 'undefined') {
+        console.log('❌ LIFF SDK が読み込まれていません');
+        return;
+    }
+    
+    if (!liffInitialized) {
+        console.log('❌ LIFF が初期化されていません');
+        return;
+    }
+    
+    console.log('✅ LIFF SDK:', 'OK');
+    console.log('✅ LIFF初期化:', 'OK');
+    console.log('📱 LINE環境:', liff.isInClient() ? 'LINE内ブラウザ' : '通常ブラウザ');
+    console.log('🔐 ログイン状態:', liff.isLoggedIn() ? 'ログイン済み' : '未ログイン');
+    console.log('💬 sendMessages利用可能:', typeof liff.sendMessages === 'function' ? 'YES' : 'NO');
+    
+    if (liff.isLoggedIn()) {
+        console.log('🎫 アクセストークン:', liff.getAccessToken() ? '取得済み' : '未取得');
+    }
+    
+    // メッセージ送信に必要な条件をチェック
+    const requirements = [
+        { name: 'LIFF SDK', check: typeof liff !== 'undefined' },
+        { name: 'LIFF初期化', check: liffInitialized },
+        { name: 'sendMessages機能', check: typeof liff.sendMessages === 'function' },
+        { name: 'ログイン状態', check: liff.isLoggedIn() }
+    ];
+    
+    console.log('📝 メッセージ送信要件チェック:');
+    requirements.forEach(req => {
+        console.log(`${req.check ? '✅' : '❌'} ${req.name}: ${req.check ? 'OK' : 'NG'}`);
+    });
+    
+    const allRequirementsMet = requirements.every(req => req.check);
+    console.log(`🚀 メッセージ送信可能: ${allRequirementsMet ? 'YES' : 'NO'}`);
+    
+    if (!allRequirementsMet) {
+        console.log('💡 解決方法:');
+        if (!liff.isLoggedIn()) {
+            console.log('   - LINEログインボタンを押してログインしてください');
+        }
+        if (!liff.isInClient()) {
+            console.log('   - LINE内ブラウザで開いてください');
+        }
     }
 };
 
@@ -492,7 +604,10 @@ const setupEventListeners = () => {
     elements.loginBtn.addEventListener('click', login);
     elements.logoutBtn.addEventListener('click', logout);
     elements.scanQrBtn.addEventListener('click', scanQrCode);
-    elements.sendMessageBtn.addEventListener('click', sendMessage);
+    elements.sendMessageBtn.addEventListener('click', () => {
+        diagnoseSendMessage(); // 診断情報をコンソールに出力
+        sendMessage();
+    });
     elements.shareBtn.addEventListener('click', shareContent);
     elements.getDeviceInfoBtn.addEventListener('click', getDeviceInfo);
     elements.getLocationBtn.addEventListener('click', getLocation);

@@ -168,6 +168,33 @@
                         debug: `scanCodeV2: ${qrScanV2Available ? '利用可能' : '利用不可'}\nscanCode: ${qrScanV1Available ? '利用可能' : '利用不可'}`
                     });
                     
+                    // メッセージ送信機能チェック
+                    const sendMessagesAvailable = typeof liff.sendMessages === 'function';
+                    const isLoggedIn = liff.isLoggedIn();
+                    const isInClient = liff.isInClient();
+                    
+                    let messageStatus = 'error';
+                    let messageStatusMsg = 'メッセージ送信機能が利用できません';
+                    
+                    if (sendMessagesAvailable && isLoggedIn && isInClient) {
+                        messageStatus = 'ok';
+                        messageStatusMsg = 'メッセージ送信機能が利用可能です';
+                    } else if (sendMessagesAvailable) {
+                        messageStatus = 'warning';
+                        if (!isLoggedIn) {
+                            messageStatusMsg = 'メッセージ送信にはLINEログインが必要です';
+                        } else if (!isInClient) {
+                            messageStatusMsg = 'メッセージ送信にはLINE内ブラウザが必要です';
+                        }
+                    }
+                    
+                    results.push({
+                        title: 'メッセージ送信機能',
+                        status: messageStatus,
+                        message: messageStatusMsg,
+                        debug: `sendMessages: ${sendMessagesAvailable ? '利用可能' : '利用不可'}\nログイン状態: ${isLoggedIn ? 'ログイン済み' : '未ログイン'}\nLINE環境: ${isInClient ? 'LINE内ブラウザ' : '通常ブラウザ'}`
+                    });
+                    
                 } catch (error) {
                     results.push({
                         title: 'LIFF初期化',
