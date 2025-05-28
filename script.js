@@ -1,5 +1,5 @@
-// LIFF IDを設定（実際の開発では環境変数や設定ファイルから読み込み）
-const LIFF_ID = 'YOUR_LIFF_ID'; // 実際のLIFF IDに置き換えてください
+// LIFF IDを環境変数から取得
+const LIFF_ID = window.ENV?.LIFF_ID || 'YOUR_LIFF_ID';
 
 // グローバル変数
 let liffInitialized = false;

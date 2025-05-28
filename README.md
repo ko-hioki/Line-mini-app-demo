@@ -42,15 +42,48 @@
 4. LIFF アプリを追加
 5. LIFF ID を取得
 
-### 2. 設定の更新
+### 2. 環境変数の設定
 
-`script.js` ファイルの以下の部分を更新：
+`.env.local` ファイルを作成してLIFF IDを設定：
+
+```bash
+# .env.local ファイルを作成
+cp .env.local.example .env.local
+
+# または手動で作成
+echo "LIFF_ID=YOUR_LIFF_ID" > .env.local
+```
+
+`.env.local` ファイルの内容例：
+```
+LIFF_ID=1234567890-abcdefgh
+NODE_ENV=development
+```
+
+> **注意**: `.env.local` ファイルには実際のLIFF IDが含まれるため、Gitにコミットしないでください。このファイルは `.gitignore` に追加済みです。
+
+### 3. 設定の更新（旧方式）
+
+従来通り、`script.js` ファイルを直接編集することも可能：
 
 ```javascript
 const LIFF_ID = 'YOUR_LIFF_ID'; // 実際のLIFF IDに置き換えてください
 ```
 
-### 3. HTTPSでの配信
+### 4. 開発の開始
+
+環境変数を設定した後、以下のコマンドで開発を開始：
+
+```bash
+# 環境変数ファイルを生成してサーバー起動
+npm start
+
+# または個別に実行
+./generate-env.sh  # 環境変数ファイル生成
+python3 -m http.server 8000  # サーバー起動
+```
+
+### 5. HTTPSでの配信
 
 LIFFアプリはHTTPS環境でのみ動作します。以下のいずれかの方法で配信：
 

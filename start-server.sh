@@ -3,6 +3,17 @@
 echo "🚀 LINEミニアプリ ローカル開発サーバー起動スクリプト"
 echo ""
 
+# 環境変数ファイル生成
+echo "📋 環境変数設定を確認中..."
+if [ -f ".env.local" ]; then
+    echo "✅ .env.local found - 環境変数ファイルを生成中..."
+    ./generate-env.sh
+else
+    echo "⚠️  .env.local not found - デフォルト設定を使用"
+    echo "💡 .env.local ファイルを作成してLIFF_IDを設定することを推奨します"
+fi
+echo ""
+
 # オプション1: Python HTTP サーバー（推奨）
 echo "オプション1: Python HTTP サーバー (推奨)"
 echo "実行コマンド: python3 -m http.server 8000"

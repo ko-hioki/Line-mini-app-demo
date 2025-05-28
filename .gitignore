@@ -109,6 +109,14 @@ Thumbs.db
 # LIFF specific
 liff-starter.js
 
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+env.js
+
 # Build outputs
 build/
 dist/

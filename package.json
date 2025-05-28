@@ -4,12 +4,13 @@
   "description": "LINE Mini App (LIFF) Demo Application showcasing various LIFF features",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 8000",
-    "dev": "python3 -m http.server 8000",
-    "build": "echo 'Static site - no build required'",
-    "serve": "python3 -m http.server 8000",
-    "https": "npx http-server -p 8443 --ssl",
-    "info": "./start-server.sh"
+    "start": "./generate-env.sh && python3 -m http.server 8000",
+    "dev": "./generate-env.sh && python3 -m http.server 8000",
+    "build": "./generate-env.sh && echo 'Static site - build completed'",
+    "serve": "./generate-env.sh && python3 -m http.server 8000",
+    "https": "./generate-env.sh && npx http-server -p 8443 --ssl",
+    "info": "./start-server.sh",
+    "setup": "./generate-env.sh"
   },
   "keywords": [
     "line",
